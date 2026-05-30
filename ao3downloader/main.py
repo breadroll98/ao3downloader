@@ -11,6 +11,7 @@ from ao3downloader.actions import updatefics
 from ao3downloader.actions import redownload
 from ao3downloader.actions import logvisualization
 from ao3downloader.actions import updateseries
+from ao3downloader.actions import updateficsfromauthor
 from ao3downloader.actions import getlinks
 from ao3downloader.actions import markedforlater
 from ao3downloader.actions import enterlinks
@@ -40,7 +41,9 @@ def update_epubs_action():
 
 def update_series_action():
     updateseries.action()
-    
+
+def update_author_action():
+    updateficsfromauthor.action()
 
 def re_download_action():
     redownload.action()
@@ -95,6 +98,7 @@ actions: dict[str, MenuAction] = {
     'p': MenuAction(strings.ACTION_DESCRIPTION_PINBOARD, pinboard_download_action),
     'v': MenuAction(strings.ACTION_DESCRIPTION_VISUALIZATION, log_visualization_action),
     'i': MenuAction(strings.ACTION_DESCRIPTION_CONFIGURE_IGNORELIST, ignorelist_action),
+    'o': MenuAction(strings.ACTION_DESCRIPTION_UPDATE_AUTHOR, update_author_action)
 }
 
 def ao3downloader():

@@ -58,6 +58,7 @@ ACTION_DESCRIPTION_LINKS_ONLY = 'get all work links from an ao3 listing (saves l
 ACTION_DESCRIPTION_MARKED_FOR_LATER = 'download marked for later list and mark all as read (requires login)'
 ACTION_DESCRIPTION_FILE_INPUT = 'download links from file'
 ACTION_DESCRIPTION_CONFIGURE_IGNORELIST = 'configure ignore list (list of links to never try to download)'
+ACTION_DESCRIPTION_UPDATE_AUTHOR = 'download missing fics from author'
 
 PINBOARD_PROMPT_API_TOKEN = 'please enter api token'
 PINBOARD_PROMPT_INCLUDE_UNREAD = 'do you want to include unread bookmarks? ({}/{})'.format(PROMPT_YES, PROMPT_NO)

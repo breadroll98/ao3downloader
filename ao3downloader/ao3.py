@@ -60,6 +60,14 @@ class Ao3:
         except Exception as e:
             self.log_error(log, e)
 
+    def update_author(self, link: str, existing_links: set[str], visited: list[str]) -> None:
+
+        log = {}
+
+        try:
+            self.download_missing_fics_from_author(link, existing_links, visited)
+        except Exception as e:
+            self.log_error(log, e)
 
     def get_work_links(self, link: str, metadata: bool) -> dict[str, dict]:
         
@@ -171,18 +179,38 @@ class Ao3:
 
 
     def download_series(self, link: str, log: dict, visited: list[str]) -> None:
-        """"Download all works in a series"""
+        """Download all works in a series."""
+
+        self._download_listing(link, log, visited)
+
+
+    def download_missing_fics_from_author(
+            self, author_link: str, existing_links: set[str] | None, visited: list[str]) -> None:
+        """Download works from an author page that are not already present locally."""
+
+        log = {}
+        skip_links = {
+            link.replace('http://', 'https://') for link in existing_links
+        } if existing_links else None
+        self._download_listing(author_link, log, visited, skip_links)
+
+
+    def _download_listing(
+            self, link: str, log: dict, visited: list[str], skip_links: set[str] | None = None) -> None:
+        """Download all works from a paginated AO3 listing page."""
 
         try:
             total_pages = None
             while True:
-                series_soup = self.repo.get_soup(link)
-                series_soup = self.proceed(series_soup)
+                page_soup = self.repo.get_soup(link)
+                page_soup = self.proceed(page_soup)
                 if total_pages is None:
-                    total_pages = parse_soup.get_total_pages(series_soup)
-                work_urls = parse_soup.get_work_urls(series_soup)
+                    total_pages = parse_soup.get_total_pages(page_soup)
+                work_urls = parse_soup.get_work_urls(page_soup)
                 if self.debug: self.fileops.write_log({'link': link, 'message': strings.INFO_STARTING_PAGE, 'level': 'debug'})
                 for work_url in work_urls:
+                    if skip_links and work_url in skip_links:
+                        continue
                     self.download_recursive(work_url, log, visited)
                 pagenum = parse_text.get_page_number(link)
                 if not total_pages or pagenum >= total_pages:

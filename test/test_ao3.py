@@ -560,6 +560,22 @@ def test_download_series_exception_logs_with_series_link() -> None:
     assert log['success'] is False
     assert log['error'] == 'network error'
 
+
+def test_download_listing_skips_existing_links() -> None:
+    ao3, _, _ = make_ao3()
+    work1 = 'https://archiveofourown.org/works/111'
+    work2 = 'https://archiveofourown.org/works/222'
+    author_url = 'https://archiveofourown.org/users/test/works'
+
+    with patch.object(Ao3, 'proceed', side_effect=lambda soup: soup), \
+         patch('ao3downloader.parse_soup.get_total_pages', return_value=None), \
+         patch('ao3downloader.parse_soup.get_work_urls', return_value=[work1, work2]), \
+         patch.object(Ao3, 'download_recursive') as mock_dr:
+        ao3.download_missing_fics_from_author(author_url, {work1}, [])
+
+    assert mock_dr.call_count == 1
+    mock_dr.assert_called_once_with(work2, {}, [])
+
 # endregion
 
 # region Entry points — download(), update(), update_series()
